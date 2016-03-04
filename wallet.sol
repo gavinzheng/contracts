@@ -24,11 +24,11 @@ contract QuorumWallet {
       uint value;
       bytes data;
   }
-  
+
   mapping (bytes32 => Transaction) public pending;
 
   bytes32[] public pendingRefs;
-  
+
   // Helper to reduce number of calls
   function allPendingRefs() returns (bytes32[]) {
       return pendingRefs;
@@ -108,7 +108,11 @@ contract QuorumWallet {
       // More at https://github.com/ethereum/wiki/wiki/Solidity-Features#generic-call-method
       tx.to.call.value(tx.value)(tx.data);
     } else {
-      tx.to.send(tx.value);
+      // Always use call instead of send ( tx.to.send(tx.value); ),
+      // to workaround a bug in relation to contract-based wallets
+      // See more at https://github.com/ethereum/mist/issues/135
+      // tx.to.send(tx.value);
+      tx.to.call.value(tx.value)();
     }
 
     delete pending[ref];
