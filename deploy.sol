@@ -16,6 +16,8 @@
  */
 
 contract QuorumDeploy {
+  event WalletDeployed(address wallet);
+
   //
   // Creating new wallets
   //
@@ -25,7 +27,9 @@ contract QuorumDeploy {
       throw;
     }
     
-    return new QuorumWallet(bitcoinKey, owner);
+    QuorumWallet wallet = new QuorumWallet(bitcoinKey, owner);
+    WalletDeployed(wallet);
+    return wallet;
   }
 
   //
